@@ -8,7 +8,7 @@ public class JsonCreator {
         json.put("challenge", "");
         json.put("username", "admin");
         json.put("password", password + "_admin");
-        json.put("cap_user", "flnki");
+        json.put("cap_user", "wawyar");
         json.put("save", "로그인");
         json.put("submit-url", "/admin/login.asp");
         return json;
