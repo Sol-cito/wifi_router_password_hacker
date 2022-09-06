@@ -22,12 +22,9 @@ public class PostThread extends Thread {
             for (String fiveDigit : fiveDigitArr) {
                 for (char eachLetter : eachLetterArr) {
                     String password = new StringBuilder().append(fiveDigit).append(eachLetter).toString();
-//                    System.out.println("요청 : " + password);
                     httpRequester.requestPost(this.url, password);
                 }
             }
-            long endTime = System.currentTimeMillis();
-            System.out.println("End Thread : " + endTime);
         } catch (Exception e) {
             e.printStackTrace();
         }
